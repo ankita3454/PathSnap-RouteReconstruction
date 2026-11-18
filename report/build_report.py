@@ -370,11 +370,12 @@ The evaluator enters the API address, sees the trip list from <code>GET /trips</
 the predicted route and shows Top-1 (HMM and classifier-only), route precision/recall/F1, continuity and timings.</p>
 {img(f"{IMG}/ui_laptop2.png", "Fig 17. Two-laptop deployment: the evaluator UI running on Laptop 2, connected over the network to the API on Laptop 1 (http://172.20.10.2:8000), showing evaluator trip 00000059. The metrics match the Laptop 1 API log in Fig 18.", "95%")}
 {img(f"{IMG}/ui_live.png", "Fig 17b. Evaluator UI during the live run on the 10 evaluator trips (trip 00000015 selected): GPS fixes (blue), predicted HMM route (red), server-side metrics and timings.", "95%")}
-{img(f"{IMG}/api_log_live.png", "Fig 18. API log on Laptop 1 (uvicorn terminal) during the live run: model loaded with eval_dir = evaluator_test, GET /trips returns 10 trips, and every POST /predict returns 200 OK with its server-side metrics and time.", "100%")}
+{img(f"{IMG}/api_log_laptop2.png", "Fig 18. API log on Laptop 1 during the two-laptop run: GET /trips and POST /predict requests arrive from Laptop 2 (172.20.10.3) over the network, and every request returns 200 OK with its server-side metrics. The trip 00000059 numbers match Fig 17 on Laptop 2.", "100%")}
+{img(f"{IMG}/api_log_live.png", "Fig 19. API log on Laptop 1 (uvicorn terminal) during the live run: model loaded with eval_dir = evaluator_test, GET /trips returns 10 trips, and every POST /predict returns 200 OK with its server-side metrics and time.", "100%")}
 <p><b>Example API response</b> (<code>curl</code>, a student-test trip, GPS/route arrays truncated):</p><pre>{html.escape(api_json)}</pre>
 
 <h3>7.1 Results on the evaluator-test trips (live run)</h3>
-<p>These figures are transcribed from the API log in Fig 18 (<code>results/evaluator/evaluator_results.csv</code>). They were produced by
+<p>These figures are transcribed from the API log in Fig 19, which covers all 10 trips (<code>results/evaluator/evaluator_results.csv</code>). They were produced by
 the frozen pipeline (tuned LightGBM + HMM). Nothing was retrained or retuned after these trips were seen.</p>
 {table(ev[["trip","n_obs","top1_classifier_only","top1_hmm","route_f1","continuity_hmm","server_time_s"]], {c: f4 for c in ["top1_classifier_only","top1_hmm","route_f1","continuity_hmm"]} | {"server_time_s": lambda x: f"{x:.2f}"})}
 <p>Pooled over all {int(ev.n_obs.sum()):,} evaluator fixes, Top-1 is {pc(ev_clf)} for the classifier alone and <b>{pc(ev_hmm)}</b> with HMM
