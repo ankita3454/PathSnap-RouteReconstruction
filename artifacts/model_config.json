@@ -1,0 +1,39 @@
+{
+ "model": "LightGBM",
+ "params": {
+  "num_leaves": 102,
+  "learning_rate": 0.09477972652122088,
+  "n_estimators": 500,
+  "min_child_samples": 77,
+  "subsample": 0.9447648932021865,
+  "colsample_bytree": 0.7515881340861911,
+  "reg_lambda": 1.296627033382355
+ },
+ "features": [
+  "dist",
+  "dist_rank",
+  "dist_minus_min",
+  "dist_softmax",
+  "head_diff",
+  "head_diff_long",
+  "head_diff_undirected",
+  "speed",
+  "step_len",
+  "dt",
+  "arc_len",
+  "proj_frac",
+  "proj_overshoot",
+  "n_cands",
+  "win_dist_mean",
+  "win_dist_max",
+  "dist_prev",
+  "dist_next",
+  "out_deg_to",
+  "in_deg_from",
+  "has_twin"
+ ],
+ "candidates": {
+  "radius": 50.0,
+  "k_max": 8
+ }
+}

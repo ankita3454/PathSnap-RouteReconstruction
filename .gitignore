@@ -1,0 +1,15 @@
+# raw data is distributed by the organisers - not committed
+data
+data/
+*.zip
+# large intermediate caches (rebuilt by scripts/01_build_dataset.py)
+cache/
+results/features_*.parquet
+results/model_*.parquet
+results/models/test_scores_*.parquet
+results/bayes/oof_train_tuned.parquet
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+.env

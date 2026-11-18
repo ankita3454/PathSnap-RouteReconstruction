@@ -1,0 +1,7 @@
+{
+ "rule": "train trips with median(fix -> reference arc distance) > 50 m",
+ "excluded": [
+  "00000033",
+  "00000054"
+ ]
+}

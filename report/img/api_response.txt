@@ -1,0 +1,49 @@
+$ curl -X POST http://<laptop1>:8000/predict -d '{"trip_id":"00000052"}'
+{
+ "trip_id": "00000052",
+ "timestamp": "2026-11-18T05:48:25",
+ "n_observations": 262,
+ "n_candidates": 1704,
+ "gps": [
+  [
+   56.79915,
+   35.858383
+  ],
+  [
+   56.799107,
+   35.858632
+  ],
+  "... 260 more points"
+ ],
+ "predicted_route": [
+  [
+   [
+    56.79944,
+    35.857654
+   ],
+   [
+    56.798579,
+    35.860419
+   ]
+  ],
+  "... 92 more arcs"
+ ],
+ "n_route_arcs": 93,
+ "route_breaks": 0,
+ "route_length_km": 5.264132131224925,
+ "route_continuity_hmm": 0.9655172413793104,
+ "route_continuity_classifier_only": 0.9616858237547893,
+ "metrics": {
+  "obs_top1_hmm": 1.0,
+  "obs_top1_classifier_only": 0.9847328244274809,
+  "route_precision": 1.0,
+  "route_recall": 0.996867720996692,
+  "route_f1": 0.9984314038579657
+ },
+ "timings_s": {
+  "preprocess_s": 0.06436395645141602,
+  "classifier_s": 0.039884090423583984,
+  "hmm_s": 0.10591363906860352,
+  "total_s": 0.2193293571472168
+ }
+}

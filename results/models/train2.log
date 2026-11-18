@@ -1,0 +1,24 @@
+=== MLP
+  fold 0: macroF1=0.9280 ll=0.1279 top1=0.8581 (17s)
+  fold 1: macroF1=0.9320 ll=0.1029 top1=0.8934 (21s)
+  fold 2: macroF1=0.9416 ll=0.1002 top1=0.9157 (21s)
+  fold 3: macroF1=0.9494 ll=0.0720 top1=0.9199 (24s)
+/usr/local/lib/python3.13/site-packages/sklearn/neural_network/_multilayer_perceptron.py:785: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (40) reached and the optimization hasn't converged yet.
+  warnings.warn(
+  fold 4: macroF1=0.9211 ll=0.1084 top1=0.8563 (30s)
+  TEST: macroF1=0.9317 ll=0.0977 top1=0.8941 cont=0.9422
+=== KNN
+  fold 0: macroF1=0.9174 ll=0.1872 top1=0.8477 (0s)
+  fold 1: macroF1=0.9180 ll=0.1555 top1=0.8790 (0s)
+  fold 2: macroF1=0.9269 ll=0.1497 top1=0.9002 (0s)
+  fold 3: macroF1=0.9382 ll=0.1040 top1=0.9065 (0s)
+  fold 4: macroF1=0.9046 ll=0.1611 top1=0.8394 (0s)
+  TEST: macroF1=0.9158 ll=0.1464 top1=0.8751 cont=0.9287
+=== RandomForest
+  fold 0: macroF1=0.9296 ll=0.1172 top1=0.8572 (70s)
+  fold 1: macroF1=0.9365 ll=0.0917 top1=0.8933 (68s)
+  fold 2: macroF1=0.9450 ll=0.0940 top1=0.9166 (70s)
+  fold 3: macroF1=0.9534 ll=0.0677 top1=0.9235 (71s)
+  fold 4: macroF1=0.9280 ll=0.1014 top1=0.8607 (68s)
+  TEST: macroF1=0.9328 ll=0.0921 top1=0.8906 cont=0.9368
+done

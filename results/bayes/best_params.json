@@ -1,0 +1,16 @@
+{
+ "best_params": {
+  "num_leaves": 102,
+  "learning_rate": 0.09477972652122088,
+  "n_estimators": 500,
+  "min_child_samples": 77,
+  "subsample": 0.9447648932021865,
+  "colsample_bytree": 0.7515881340861911,
+  "reg_lambda": 1.296627033382355
+ },
+ "best_cv3_top1": 0.8953089802432772,
+ "n_trials": 20,
+ "search_seconds": 1032.4285998077391,
+ "sampler": "TPE(seed=42, 6 random startup trials)",
+ "objective": "mean 3-fold GroupKFold observation-level Top-1 accuracy (TRAIN)"
+}
