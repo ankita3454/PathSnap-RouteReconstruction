@@ -1,0 +1,15 @@
+<h3>2.3 Feature engineering</h3>
+<p>We extracted 21 features and organised them into five groups.</p>
+<table><thead><tr><th>Feature group</th><th>What it represents</th><th>Features</th><th>Importance</th></tr></thead><tbody>
+<tr><td>Distance</td><td>How close the GPS point is to a candidate road</td><td>dist, dist_rank, dist_minus_min, dist_softmax</td><td>40.5%</td></tr>
+<tr><td>Direction</td><td>How well the road direction matches GPS movement</td><td>head_diff, head_diff_long, head_diff_undirected</td><td>31.3%</td></tr>
+<tr><td>Topology</td><td>Road length, intersections and reverse-direction twins</td><td>arc_len, proj_frac, proj_overshoot, in_deg_from, out_deg_to, has_twin, n_cands</td><td>21.3%</td></tr>
+<tr><td>Context</td><td>Whether neighbouring GPS points support the same road</td><td>win_dist_mean, win_dist_max, dist_prev, dist_next</td><td>5.1%</td></tr>
+<tr><td>Kinematics</td><td>Speed and time gaps between GPS observations</td><td>speed, step_len, dt</td><td>1.9%</td></tr></tbody></table>
+<p>Distance and direction were the most important feature groups, together contributing 71.8% of the feature importance (Fig 13).</p>
+<p><b>Example of how features help.</b> Consider row 200 in our notebook. Two candidate roads were both approximately 6.76 metres away from the GPS point. Based on distance alone, both roads appeared equally likely. However, their directional alignment was very different: the correct road had a 12° difference and the incorrect road a 168° difference. This shows why direction features are particularly useful for distinguishing between roads travelling in opposite directions.</p>
+<p>We also observed clear differences between correct and incorrect road candidates:</p>
+<table><thead><tr><th>Feature</th><th>Correct road</th><th>Incorrect road</th></tr></thead><tbody>
+<tr><td>Median distance</td><td>5.2 m</td><td>17.3 m</td></tr>
+<tr><td>Long-window heading difference</td><td>10.9°</td><td>99.3°</td></tr></tbody></table>
+<p>These results show that both distance and heading provide useful information when selecting the correct road.</p>

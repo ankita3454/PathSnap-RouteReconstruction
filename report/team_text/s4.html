@@ -1,0 +1,14 @@
+<p><b>Q1. Which parameters did we optimise?</b> After selecting LightGBM as our final classifier, we experimented with Bayesian optimisation to see whether we could improve its performance further. We searched for the following hyperparameters: num_leaves, learning_rate, n_estimators, min_child_samples, subsample, colsample_bytree and reg_lambda.</p>
+<p><b>Q2. What ranges did we use?</b></p>
+<table><thead><tr><th>Parameter</th><th>Search range</th></tr></thead><tbody>
+<tr><td>num_leaves</td><td>15–127 (log)</td></tr><tr><td>learning_rate</td><td>0.01–0.2 (log)</td></tr><tr><td>n_estimators</td><td>100–500, step 50</td></tr>
+<tr><td>min_child_samples</td><td>5–300 (log)</td></tr><tr><td>subsample</td><td>0.5–1</td></tr><tr><td>colsample_bytree</td><td>0.4–1</td></tr><tr><td>reg_lambda</td><td>0.001–10 (log)</td></tr></tbody></table>
+<p>Logarithmic sampling was used for parameters where it was appropriate.</p>
+<p><b>Q3. What was the optimisation objective?</b> Our objective was to maximise Top-1 accuracy using 3-fold GroupKFold cross-validation on the training dataset. This allowed us to search for parameters that generalised across different trips.</p>
+<p><b>Q4. How was the optimisation performed?</b> We used Optuna with the Tree-structured Parzen Estimator (TPE) sampler. We ran 20 trials, using random seed 42 and 6 random starting trials, with a total computation time of approximately 17 minutes. During the process, the machine restarted after trial 14. We recovered the completed trials from the log and reloaded them (<code>scripts/05a_import_trials_from_log.py</code>). An earlier, wider search was also attempted, but we stopped it after 11 trials because it was taking too long.</p>
+<p><b>Q5. What were the best hyperparameters?</b></p>
+<table><thead><tr><th>Parameter</th><th>Best value</th></tr></thead><tbody>
+<tr><td>num_leaves</td><td>102</td></tr><tr><td>learning_rate</td><td>0.095</td></tr><tr><td>n_estimators</td><td>500</td></tr><tr><td>min_child_samples</td><td>77</td></tr>
+<tr><td>subsample</td><td>0.94</td></tr><tr><td>colsample_bytree</td><td>0.75</td></tr><tr><td>reg_lambda</td><td>1.30</td></tr></tbody></table>
+<p>This configuration achieved a 3-fold Top-1 accuracy of 0.8953.</p>
+<p><b>Q6. Did Bayesian optimisation improve performance?</b> Interestingly, the answer was no. Although we found a different combination of hyperparameters, the overall performance remained almost unchanged:</p>
