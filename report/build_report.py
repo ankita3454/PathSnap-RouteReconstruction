@@ -7,7 +7,7 @@ import pandas as pd, numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 R, FIG, IMG = f"{ROOT}/results", f"{ROOT}/results/figures", f"{ROOT}/report/img"
-TEAM = os.environ.get("PATHSNAP_TEAM", "Team: &lt;names / SRNs&gt; &middot; Section B")
+TEAM = os.environ.get("PATHSNAP_TEAM", "Team: Anisha Nukul (PES1UG24CS064) &middot; Ankita Pramod (PES1UG24CS065) &middot; Tanmay Sridhar (PES1UG25CS849) &middot; Akshar Vaghasiya (PES1UG25CS852) &middot; Section B")
 
 f4 = lambda x: f"{x:.4f}"
 pc = lambda x: f"{100*x:.2f}%"
@@ -53,6 +53,10 @@ fi = pd.read_csv(f"{R}/models/feature_importance_gain.csv", index_col=0).iloc[:,
 fi = fi / fi.sum()
 n_tr, n_te = int(summ.loc["train", "obs"]), int(summ.loc["student_test", "obs"])
 sel = grid[(grid.radius == 50) & (grid.k == 8)].iloc[0]
+ev = pd.read_csv(f"{R}/evaluator/evaluator_results.csv", dtype={"trip": str})
+_w = ev.n_obs / ev.n_obs.sum()
+ev_clf, ev_hmm = float((ev.top1_classifier_only * _w).sum()), float((ev.top1_hmm * _w).sum())
+_x = ev[ev.trip != "00000015"]; ev_hmm_x15 = float((_x.top1_hmm * _x.n_obs).sum() / _x.n_obs.sum())
 api_json = open(f"{IMG}/api_response.txt").read() if os.path.exists(f"{IMG}/api_response.txt") else ""
 api_log = open(f"{IMG}/api_log.txt").read() if os.path.exists(f"{IMG}/api_log.txt") else ""
 
@@ -170,7 +174,7 @@ pre {{ font-size: 7.5pt; background: #1a202c; color: #e2e8f0; padding: 8px; whit
 candidate, and an HMM/Viterbi decoder turns the scores into a connected route. On the 10 student-test trips
 ({n_te:,} fixes) the classifier alone reaches {pc(ga['clf_top1'])} observation Top-1 accuracy. HMM decoding raises this to
 <b>{pc(ga['hmm_top1'])}</b> and lifts route continuity from {pc(ga['clf_continuity'])} to {pc(ga['hmm_continuity'])}. The reconstructed
-routes reach a mean length-weighted route F1 of {pc(hpt.hmm_route_f1.mean())}.</div>
+routes reach a mean length-weighted route F1 of {pc(hpt.hmm_route_f1.mean())}. On the 10 evaluator-test trips (live run, frozen system) Top-1 is {pc(ev_clf)} for the classifier alone and <b>{pc(ev_hmm)}</b> with HMM decoding.</div>
 
 <h2>1. Problem framing</h2>
 <p>The <code>.route</code> file lists the arcs the vehicle traversed in order, but it does not say which GPS fix belongs to which
@@ -364,11 +368,25 @@ reconstruction. Only after that does it read the trip's <code>.route</code> (in 
 accuracy. The reference geometry is never returned. <b>Laptop 2</b> serves <code>ui/index.html</code> (Leaflet vendored locally).
 The evaluator enters the API address, sees the trip list from <code>GET /trips</code>, clicks a trip, and the UI draws the GPS and
 the predicted route and shows Top-1 (HMM and classifier-only), route precision/recall/F1, continuity and timings.</p>
-{img(f"{IMG}/ui.png", "Fig 17. Evaluator UI after running a trip (local test; basemap tiles were unavailable when this screenshot was taken offline).", "95%")}
-<p><b>API response</b> (<code>curl</code>, GPS/route arrays truncated):</p><pre>{html.escape(api_json)}</pre>
-<p><b>API log</b> on the receiving machine:</p><pre>{html.escape(api_log)}</pre>
-<p class="small">During evaluation, replace these with screenshots of the live run: the UI on Laptop 2 and the uvicorn terminal on Laptop 1.</p>
+{img(f"{IMG}/ui_laptop2.png", "Fig 17. Two-laptop deployment: the evaluator UI running on Laptop 2, connected over the network to the API on Laptop 1 (http://172.20.10.2:8000), showing evaluator trip 00000059. The metrics match the Laptop 1 API log in Fig 18.", "95%")}
+{img(f"{IMG}/ui_live.png", "Fig 17b. Evaluator UI during the live run on the 10 evaluator trips (trip 00000015 selected): GPS fixes (blue), predicted HMM route (red), server-side metrics and timings.", "95%")}
+{img(f"{IMG}/api_log_live.png", "Fig 18. API log on Laptop 1 (uvicorn terminal) during the live run: model loaded with eval_dir = evaluator_test, GET /trips returns 10 trips, and every POST /predict returns 200 OK with its server-side metrics and time.", "100%")}
+<p><b>Example API response</b> (<code>curl</code>, a student-test trip, GPS/route arrays truncated):</p><pre>{html.escape(api_json)}</pre>
 
+<h3>7.1 Results on the evaluator-test trips (live run)</h3>
+<p>These figures are transcribed from the API log in Fig 18 (<code>results/evaluator/evaluator_results.csv</code>). They were produced by
+the frozen pipeline (tuned LightGBM + HMM). Nothing was retrained or retuned after these trips were seen.</p>
+{table(ev[["trip","n_obs","top1_classifier_only","top1_hmm","route_f1","continuity_hmm","server_time_s"]], {c: f4 for c in ["top1_classifier_only","top1_hmm","route_f1","continuity_hmm"]} | {"server_time_s": lambda x: f"{x:.2f}"})}
+<p>Pooled over all {int(ev.n_obs.sum()):,} evaluator fixes, Top-1 is {pc(ev_clf)} for the classifier alone and <b>{pc(ev_hmm)}</b> with HMM
+decoding. Mean route F1 is {ev.route_f1.mean():.3f} and mean server time is {ev.server_time_s.mean():.2f} s per trip. HMM decoding
+improved Top-1 on all 10 trips, and the evaluator result ({pc(ev_hmm)}) is in line with the student-test result ({pc(ga['hmm_top1'])}).
+<b>Weakest trip: 00000015</b> (route F1 {ev.set_index('trip').loc['00000015','route_f1']:.3f}, route precision 0.64, recall 0.99).
+Its median speed over 10 s windows is 1.5 m/s, about walking pace, but over 1 s it appears to be 7.2 m/s: per-second GPS jitter is
+larger than the real motion. The heading features then become noise. Heading is the only cue that separates an arc from its
+reverse twin, and 80 % of the extra predicted length on this trip is reverse twins of reference arcs. Training trips are mostly
+vehicles (median trip speed 42.5 km/h), so this is a distribution shift. A heading measured over a fixed distance rather than a fixed
+time window would address it; we did <i>not</i> change the system after seeing this result. Without trip 15, pooled Top-1 is
+{pc(ev_hmm_x15)}.</p>
 <h2>8. Limitations</h2>
 <ul>
 <li>Per-fix labels are derived from the reference route by alignment, so they inherit route gaps (11 non-contiguous routes) and can
@@ -377,6 +395,7 @@ be ambiguous where twin arcs overlap. Reported accuracies are relative to these 
 score poorly on Top-1 even with a sensible route.</li>
 <li>Our continuity metric is strict: when the vehicle crosses a very short arc between two 1 Hz fixes, the two predicted arcs are
 counted as "not directly connected" even though the reconstructed route fills that arc in.</li>
+<li>Very slow movement (walking) makes time-window heading unreliable (evaluator trip 00000015, Section 7.1).</li>
 <li>The decoder parameters were tuned on 20 train trips, and a finer grid could add a little more.</li>
 </ul>
 
